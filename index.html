@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="midnight">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Japanese Practice</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌸</text></svg>">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ---- Themes ---- */
+[data-theme="midnight"] {
+	--bg: #1a1a2e;
+	--panel: #16213e;
+	--panel2: #0f3460;
+	--accent: #e94560;
+	--accent-hover: #c73651;
+	--win: #4ecca3;
+	--text: #eee;
+	--text-secondary: #ccc;
+	--text-muted: #888;
+	--text-dim: #555;
+	--border-dim: #444;
+	--text-on-accent: #fff;
+	--overlay-bg: rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="forest"] {
+	--bg: #0d1f12;
+	--panel: #132a1c;
+	--panel2: #1a4a28;
+	--accent: #4ecca3;
+	--accent-hover: #3aad8a;
+	--win: #f9d923;
+	--text: #e8f5e8;
+	--text-secondary: #b8d8b8;
+	--text-muted: #7a9e7a;
+	--text-dim: #4a6e4a;
+	--border-dim: #2a5a3a;
+	--text-on-accent: #0d1f12;
+	--overlay-bg: rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="sunset"] {
+	--bg: #1a0a2e;
+	--panel: #2a1040;
+	--panel2: #3d1560;
+	--accent: #fb923c;
+	--accent-hover: #e07830;
+	--win: #4ecca3;
+	--text: #f0e8ff;
+	--text-secondary: #d0b8f0;
+	--text-muted: #9070b0;
+	--text-dim: #604080;
+	--border-dim: #503070;
+	--text-on-accent: #1a0a2e;
+	--overlay-bg: rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="lt"] {
+	--bg: #3c2321;
+	--panel: #4e3431;
+	--panel2: #634644;
+	--accent: #b04949;
+	--accent-hover: #8f3030;
+	--win: #ffcd72;
+	--text: #f5e7c4;
+	--text-secondary: #e2d5b2;
+	--text-muted: #c9ad96;
+	--text-dim: #8a6a5a;
+	--border-dim: #755856;
+	--text-on-accent: #f5e7c4;
+	--overlay-bg: rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="light"] {
+	--bg: #f0f0eb;
+	--panel: #ffffff;
+	--panel2: #e0e0d8;
+	--accent: #2563eb;
+	--accent-hover: #1d4ed8;
+	--win: #16a34a;
+	--text: #1a1a1a;
+	--text-secondary: #444;
+	--text-muted: #777;
+	--text-dim: #bbb;
+	--border-dim: #ccc;
+	--text-on-accent: #fff;
+	--overlay-bg: rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="cotton-candy"] {
+	--bg: #5a1040;
+	--panel: #7a1a58;
+	--panel2: #9a2270;
+	--accent: #60c0ff;
+	--accent-hover: #40a8f0;
+	--win: #d4a0ff;
+	--text: #fff0f8;
+	--text-secondary: #f0c0e0;
+	--text-muted: #d080b0;
+	--text-dim: #a05080;
+	--border-dim: #8a3868;
+	--text-on-accent: #0a1a3a;
+	--overlay-bg: rgba(0, 0, 0, 0.5);
+}
+
+body {
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Yu Gothic', 'Noto Sans JP', sans-serif;
+	background: var(--bg);
+	color: var(--text);
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 24px 16px 40px;
+	-webkit-user-select: none;
+	user-select: none;
+	transition: background 0.3s, color 0.3s;
+}
+
+h1 {
+	font-size: 2rem;
+	color: var(--accent);
+	letter-spacing: 2px;
+}
+
+.title-row {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 16px;
+}
+
+.icon-btn {
+	width: 28px;
+	height: 28px;
+	border-radius: 50%;
+	border: 2px solid var(--text-dim);
+	background: transparent;
+	color: var(--text-muted);
+	font-size: 0.9rem;
+	font-weight: 700;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: border-color 0.2s, color 0.2s;
+	flex-shrink: 0;
+	margin-top: 4px;
+}
+
+.icon-btn:hover {
+	border-color: var(--accent);
+	color: var(--accent);
+}
+
+/* Settings panel */
+.settings-panel {
+	display: none;
+	background: var(--panel);
+	border-radius: 10px;
+	padding: 14px 20px;
+	margin-bottom: 16px;
+	width: 100%;
+	max-width: 400px;
+}
+
+.settings-panel.open { display: block; }
+
+.settings-group { margin-bottom: 12px; }
+.settings-group:last-child { margin-bottom: 0; }
+
+.settings-label {
+	font-size: 0.75rem;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	color: var(--text-muted);
+	margin-bottom: 8px;
+	text-align: center;
+}
+
+/* Theme swatches */
+.theme-bar {
+	display: flex;
+	gap: 8px;
+	justify-content: center;
+}
+
+.theme-swatch {
+	width: 22px;
+	height: 22px;
+	border-radius: 50%;
+	border: 2px solid transparent;
+	cursor: pointer;
+	transition: border-color 0.2s, transform 0.2s;
+}
+
+.theme-swatch:hover { transform: scale(1.2); }
+.theme-swatch.active { border-color: var(--text); transform: scale(1.15); }
+
+.theme-swatch[data-theme="midnight"]     { background: #e94560; }
+.theme-swatch[data-theme="forest"]       { background: #4ecca3; }
+.theme-swatch[data-theme="sunset"]       { background: #fb923c; }
+.theme-swatch[data-theme="lt"]           { background: #b04949; }
+.theme-swatch[data-theme="light"]        { background: #2563eb; }
+.theme-swatch[data-theme="cotton-candy"] { background: #9a2270; }
+
+/* Mode tabs */
+.mode-bar {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+	justify-content: center;
+	margin-bottom: 20px;
+}
+
+.mode-btn {
+	padding: 8px 16px;
+	border: 2px solid var(--accent);
+	background: transparent;
+	color: var(--accent);
+	border-radius: 6px;
+	font-size: 0.9rem;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.mode-btn.active, .mode-btn:hover {
+	background: var(--accent);
+	color: var(--text-on-accent);
+}
+
+/* Flashcard */
+.flashcard {
+	background: var(--panel);
+	border: 2px solid var(--panel2);
+	border-radius: 16px;
+	padding: 36px 28px;
+	width: 100%;
+	max-width: 400px;
+	min-height: 220px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	cursor: pointer;
+	transition: border-color 0.2s;
+	margin-bottom: 16px;
+	text-align: center;
+}
+
+.flashcard:hover { border-color: var(--accent); }
+.flashcard.revealed { cursor: default; }
+.flashcard.revealed:hover { border-color: var(--panel2); }
+
+.card-label {
+	font-size: 0.75rem;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	color: var(--text-muted);
+	margin-bottom: 4px;
+}
+
+.card-prompt-kana {
+	font-size: 5rem;
+	font-weight: 400;
+	line-height: 1.1;
+}
+
+.card-prompt-text {
+	font-size: 2rem;
+	font-weight: 700;
+	line-height: 1.3;
+}
+
+.card-prompt-jp {
+	font-size: 2.6rem;
+	font-weight: 700;
+	line-height: 1.2;
+}
+
+.card-reading {
+	font-size: 1.1rem;
+	color: var(--text-secondary);
+	line-height: 1.4;
+}
+
+.card-divider {
+	width: 60%;
+	height: 1px;
+	background: var(--border-dim);
+	margin: 6px 0;
+}
+
+.card-answer-main {
+	font-size: 2rem;
+	font-weight: 700;
+	color: var(--win);
+}
+
+.card-answer-kana {
+	font-size: 3rem;
+	font-weight: 400;
+	color: var(--win);
+}
+
+.card-answer-sub {
+	font-size: 1rem;
+	color: var(--text-muted);
+}
+
+.tap-hint {
+	font-size: 0.8rem;
+	color: var(--text-dim);
+	margin-top: 8px;
+}
+
+/* Grade buttons */
+.grade-bar {
+	display: flex;
+	gap: 12px;
+	margin-bottom: 20px;
+}
+
+.grade-btn {
+	flex: 1;
+	padding: 14px 20px;
+	border: none;
+	border-radius: 10px;
+	font-size: 1rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.15s;
+	max-width: 180px;
+}
+
+.grade-btn.correct {
+	background: var(--win);
+	color: #000;
+}
+
+.grade-btn.correct:hover { opacity: 0.85; }
+
+.grade-btn.wrong {
+	background: var(--accent);
+	color: var(--text-on-accent);
+}
+
+.grade-btn.wrong:hover { background: var(--accent-hover); }
+
+/* Progress */
+.progress-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+	max-width: 400px;
+	margin-bottom: 6px;
+	font-size: 0.85rem;
+	color: var(--text-muted);
+}
+
+.progress-track {
+	width: 100%;
+	max-width: 400px;
+	height: 6px;
+	background: var(--panel2);
+	border-radius: 3px;
+	margin-bottom: 20px;
+	overflow: hidden;
+}
+
+.progress-fill {
+	height: 100%;
+	background: var(--accent);
+	border-radius: 3px;
+	transition: width 0.3s;
+}
+
+/* Summary screen */
+.summary {
+	background: var(--panel);
+	border-radius: 16px;
+	padding: 36px 28px;
+	width: 100%;
+	max-width: 400px;
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+.summary-score {
+	font-size: 3.5rem;
+	font-weight: 700;
+	color: var(--win);
+	margin-bottom: 4px;
+}
+
+.summary-label {
+	font-size: 1rem;
+	color: var(--text-muted);
+	margin-bottom: 24px;
+}
+
+.summary-detail {
+	font-size: 0.95rem;
+	color: var(--text-secondary);
+	margin-bottom: 20px;
+}
+
+.action-bar {
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.action-btn {
+	padding: 11px 22px;
+	border: none;
+	border-radius: 8px;
+	font-size: 0.95rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.primary-btn {
+	background: var(--accent);
+	color: var(--text-on-accent);
+}
+
+.primary-btn:hover { background: var(--accent-hover); }
+
+.secondary-btn {
+	background: var(--panel2);
+	color: var(--text);
+}
+
+.secondary-btn:hover { background: var(--panel); }
+
+/* Info modal */
+.modal-overlay {
+	display: none;
+	position: fixed;
+	inset: 0;
+	background: var(--overlay-bg);
+	z-index: 1100;
+	align-items: center;
+	justify-content: center;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+	background: var(--panel);
+	border: 2px solid var(--panel2);
+	border-radius: 14px;
+	padding: 28px 28px 24px;
+	max-width: 360px;
+	width: 90%;
+	position: relative;
+}
+
+.modal h2 {
+	color: var(--accent);
+	font-size: 1.3rem;
+	letter-spacing: 1px;
+	margin-bottom: 14px;
+}
+
+.modal p {
+	font-size: 0.95rem;
+	color: var(--text-secondary);
+	line-height: 1.6;
+	margin-bottom: 10px;
+}
+
+.modal ul {
+	font-size: 0.95rem;
+	color: var(--text-secondary);
+	line-height: 1.8;
+	padding-left: 18px;
+	margin-bottom: 10px;
+}
+
+.modal-close {
+	position: absolute;
+	top: 12px;
+	right: 14px;
+	background: none;
+	border: none;
+	color: var(--text-muted);
+	font-size: 1.4rem;
+	cursor: pointer;
+	line-height: 1;
+}
+
+.modal-close:hover { color: var(--text); }
+</style>
+</head>
+<body>
+
+<!-- Info modal -->
+<div class="modal-overlay" id="info-modal" onclick="if(event.target===this)this.classList.remove('open')">
+	<div class="modal">
+		<button class="modal-close" onclick="document.getElementById('info-modal').classList.remove('open')">&times;</button>
+		<h2>How to Practice</h2>
+		<p>Choose a mode, then work through flashcards at your own pace.</p>
+		<ul>
+			<li>Tap the card (or press Space) to reveal the answer.</li>
+			<li>Mark yourself <strong>Got it</strong> or <strong>Missed it</strong> honestly.</li>
+			<li>At the end of a round, redo just the ones you missed.</li>
+		</ul>
+		<p><strong>Modes:</strong> EN→JP and JP→EN use your vocabulary list. Hiragana and Katakana cycle through all 46 base characters.</p>
+		<p>To add your own words, edit the <code>vocabulary</code> array at the top of the &lt;script&gt; in index.html.</p>
+	</div>
+</div>
+
+<div class="title-row">
+	<h1>日本語</h1>
+	<button class="icon-btn" onclick="document.getElementById('info-modal').classList.add('open')" title="How to use">i</button>
+	<button class="icon-btn" onclick="toggleSettings()" title="Settings">&#9881;</button>
+</div>
+
+<div class="settings-panel" id="settings-panel">
+	<div class="settings-group">
+		<div class="settings-label">Theme</div>
+		<div class="theme-bar">
+			<button class="theme-swatch active" data-theme="midnight" onclick="setTheme('midnight')" title="Midnight"></button>
+			<button class="theme-swatch" data-theme="forest" onclick="setTheme('forest')" title="Forest"></button>
+			<button class="theme-swatch" data-theme="sunset" onclick="setTheme('sunset')" title="Sunset"></button>
+			<button class="theme-swatch" data-theme="lt" onclick="setTheme('lt')" title="LibraryThing"></button>
+			<button class="theme-swatch" data-theme="light" onclick="setTheme('light')" title="Light"></button>
+			<button class="theme-swatch" data-theme="cotton-candy" onclick="setTheme('cotton-candy')" title="Cotton Candy"></button>
+		</div>
+	</div>
+</div>
+
+<div class="mode-bar">
+	<button class="mode-btn active" onclick="setMode('en-jp')">EN → JP</button>
+	<button class="mode-btn" onclick="setMode('jp-en')">JP → EN</button>
+	<button class="mode-btn" onclick="setMode('hiragana')">Hiragana</button>
+	<button class="mode-btn" onclick="setMode('katakana')">Katakana</button>
+</div>
+
+<div class="progress-row">
+	<span id="progress-text">1 / 1</span>
+	<span id="score-text">✓ 0 &nbsp; ✗ 0</span>
+</div>
+<div class="progress-track">
+	<div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+</div>
+
+<div id="card-area"></div>
+
+<div class="grade-bar" id="grade-bar" style="display:none">
+	<button class="grade-btn correct" onclick="grade(true)">✓ Got it</button>
+	<button class="grade-btn wrong" onclick="grade(false)">✗ Missed it</button>
+</div>
+
+<div class="action-bar" id="bottom-bar" style="display:none">
+	<button class="action-btn secondary-btn" onclick="startRound()">New Round</button>
+</div>
+
+<script>
+// ============================================================
+// VOCABULARY LIST — add your words here!
+// Format: { en: "English", jp: "Japanese", reading: "ひらがな", romaji: "romaji" }
+// 'reading' is the hiragana reading shown for kanji words.
+// For pure kana words, jp and reading can be the same.
+// ============================================================
+const vocabulary = [
+	{ en: "water", jp: "水", reading: "みず", romaji: "mizu" },
+	{ en: "fire", jp: "火", reading: "ひ", romaji: "hi" },
+	{ en: "mountain", jp: "山", reading: "やま", romaji: "yama" },
+	{ en: "river", jp: "川", reading: "かわ", romaji: "kawa" },
+	{ en: "person", jp: "人", reading: "ひと", romaji: "hito" },
+	{ en: "day / sun", jp: "日", reading: "ひ", romaji: "hi" },
+	{ en: "moon / month", jp: "月", reading: "つき", romaji: "tsuki" },
+	{ en: "tree / wood", jp: "木", reading: "き", romaji: "ki" },
+	{ en: "book", jp: "本", reading: "ほん", romaji: "hon" },
+	{ en: "school", jp: "学校", reading: "がっこう", romaji: "gakkou" },
+	{ en: "eat", jp: "食べる", reading: "たべる", romaji: "taberu" },
+	{ en: "drink", jp: "飲む", reading: "のむ", romaji: "nomu" },
+	{ en: "go", jp: "行く", reading: "いく", romaji: "iku" },
+	{ en: "come", jp: "来る", reading: "くる", romaji: "kuru" },
+	{ en: "see / watch", jp: "見る", reading: "みる", romaji: "miru" },
+	{ en: "hear / listen", jp: "聞く", reading: "きく", romaji: "kiku" },
+	{ en: "speak", jp: "話す", reading: "はなす", romaji: "hanasu" },
+	{ en: "read", jp: "読む", reading: "よむ", romaji: "yomu" },
+	{ en: "write", jp: "書く", reading: "かく", romaji: "kaku" },
+	{ en: "buy", jp: "買う", reading: "かう", romaji: "kau" },
+	{ en: "big", jp: "大きい", reading: "おおきい", romaji: "ookii" },
+	{ en: "small", jp: "小さい", reading: "ちいさい", romaji: "chiisai" },
+	{ en: "new", jp: "新しい", reading: "あたらしい", romaji: "atarashii" },
+	{ en: "old (thing)", jp: "古い", reading: "ふるい", romaji: "furui" },
+	{ en: "good", jp: "いい", reading: "いい", romaji: "ii" },
+	{ en: "hot (weather)", jp: "暑い", reading: "あつい", romaji: "atsui" },
+	{ en: "cold (weather)", jp: "寒い", reading: "さむい", romaji: "samui" },
+	{ en: "cat", jp: "猫", reading: "ねこ", romaji: "neko" },
+	{ en: "dog", jp: "犬", reading: "いぬ", romaji: "inu" },
+	{ en: "car", jp: "車", reading: "くるま", romaji: "kuruma" },
+	{ en: "house / home", jp: "家", reading: "いえ", romaji: "ie" },
+	{ en: "food", jp: "食べ物", reading: "たべもの", romaji: "tabemono" },
+	{ en: "what", jp: "何", reading: "なに", romaji: "nani" },
+	{ en: "where", jp: "どこ", reading: "どこ", romaji: "doko" },
+	{ en: "who", jp: "誰", reading: "だれ", romaji: "dare" },
+	{ en: "yes", jp: "はい", reading: "はい", romaji: "hai" },
+	{ en: "no", jp: "いいえ", reading: "いいえ", romaji: "iie" },
+	{ en: "thank you", jp: "ありがとう", reading: "ありがとう", romaji: "arigatou" },
+	{ en: "sorry / excuse me", jp: "すみません", reading: "すみません", romaji: "sumimasen" },
+	{ en: "please (give me)", jp: "ください", reading: "ください", romaji: "kudasai" },
+];
+
+// ---- Kana data ----
+const hiragana = [
+	{char:'あ',romaji:'a'}, {char:'い',romaji:'i'}, {char:'う',romaji:'u'}, {char:'え',romaji:'e'}, {char:'お',romaji:'o'},
+	{char:'か',romaji:'ka'}, {char:'き',romaji:'ki'}, {char:'く',romaji:'ku'}, {char:'け',romaji:'ke'}, {char:'こ',romaji:'ko'},
+	{char:'さ',romaji:'sa'}, {char:'し',romaji:'shi'}, {char:'す',romaji:'su'}, {char:'せ',romaji:'se'}, {char:'そ',romaji:'so'},
+	{char:'た',romaji:'ta'}, {char:'ち',romaji:'chi'}, {char:'つ',romaji:'tsu'}, {char:'て',romaji:'te'}, {char:'と',romaji:'to'},
+	{char:'な',romaji:'na'}, {char:'に',romaji:'ni'}, {char:'ぬ',romaji:'nu'}, {char:'ね',romaji:'ne'}, {char:'の',romaji:'no'},
+	{char:'は',romaji:'ha'}, {char:'ひ',romaji:'hi'}, {char:'ふ',romaji:'fu'}, {char:'へ',romaji:'he'}, {char:'ほ',romaji:'ho'},
+	{char:'ま',romaji:'ma'}, {char:'み',romaji:'mi'}, {char:'む',romaji:'mu'}, {char:'め',romaji:'me'}, {char:'も',romaji:'mo'},
+	{char:'や',romaji:'ya'}, {char:'ゆ',romaji:'yu'}, {char:'よ',romaji:'yo'},
+	{char:'ら',romaji:'ra'}, {char:'り',romaji:'ri'}, {char:'る',romaji:'ru'}, {char:'れ',romaji:'re'}, {char:'ろ',romaji:'ro'},
+	{char:'わ',romaji:'wa'}, {char:'を',romaji:'wo'}, {char:'ん',romaji:'n'},
+];
+
+const katakana = [
+	{char:'ア',romaji:'a'}, {char:'イ',romaji:'i'}, {char:'ウ',romaji:'u'}, {char:'エ',romaji:'e'}, {char:'オ',romaji:'o'},
+	{char:'カ',romaji:'ka'}, {char:'キ',romaji:'ki'}, {char:'ク',romaji:'ku'}, {char:'ケ',romaji:'ke'}, {char:'コ',romaji:'ko'},
+	{char:'サ',romaji:'sa'}, {char:'シ',romaji:'shi'}, {char:'ス',romaji:'su'}, {char:'セ',romaji:'se'}, {char:'ソ',romaji:'so'},
+	{char:'タ',romaji:'ta'}, {char:'チ',romaji:'chi'}, {char:'ツ',romaji:'tsu'}, {char:'テ',romaji:'te'}, {char:'ト',romaji:'to'},
+	{char:'ナ',romaji:'na'}, {char:'ニ',romaji:'ni'}, {char:'ヌ',romaji:'nu'}, {char:'ネ',romaji:'ne'}, {char:'ノ',romaji:'no'},
+	{char:'ハ',romaji:'ha'}, {char:'ヒ',romaji:'hi'}, {char:'フ',romaji:'fu'}, {char:'ヘ',romaji:'he'}, {char:'ホ',romaji:'ho'},
+	{char:'マ',romaji:'ma'}, {char:'ミ',romaji:'mi'}, {char:'ム',romaji:'mu'}, {char:'メ',romaji:'me'}, {char:'モ',romaji:'mo'},
+	{char:'ヤ',romaji:'ya'}, {char:'ユ',romaji:'yu'}, {char:'ヨ',romaji:'yo'},
+	{char:'ラ',romaji:'ra'}, {char:'リ',romaji:'ri'}, {char:'ル',romaji:'ru'}, {char:'レ',romaji:'re'}, {char:'ロ',romaji:'ro'},
+	{char:'ワ',romaji:'wa'}, {char:'ヲ',romaji:'wo'}, {char:'ン',romaji:'n'},
+];
+
+// ---- State ----
+let currentMode = 'en-jp';
+let deck = [];
+let deckIndex = 0;
+let revealed = false;
+let correctCount = 0;
+let wrongItems = [];
+let roundDone = false;
+
+// ---- Theme ----
+function setTheme(theme) {
+	document.documentElement.setAttribute('data-theme', theme);
+	localStorage.setItem('jp-theme', theme);
+	document.querySelectorAll('.theme-swatch').forEach(btn => {
+		btn.classList.toggle('active', btn.dataset.theme === theme);
+	});
+}
+
+function toggleSettings() {
+	document.getElementById('settings-panel').classList.toggle('open');
+}
+
+// ---- Mode ----
+function setMode(mode) {
+	currentMode = mode;
+	document.querySelectorAll('.mode-btn').forEach((btn, i) => {
+		const modes = ['en-jp', 'jp-en', 'hiragana', 'katakana'];
+		btn.classList.toggle('active', modes[i] === mode);
+	});
+	localStorage.setItem('jp-mode', mode);
+	startRound();
+}
+
+function getDeckForMode() {
+	if (currentMode === 'en-jp' || currentMode === 'jp-en') {
+		return [...vocabulary];
+	} else if (currentMode === 'hiragana') {
+		return [...hiragana];
+	} else {
+		return [...katakana];
+	}
+}
+
+// ---- Round management ----
+function shuffle(arr) {
+	const a = [...arr];
+	for (let i = a.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[a[i], a[j]] = [a[j], a[i]];
+	}
+	return a;
+}
+
+function startRound(items) {
+	deck = shuffle(items || getDeckForMode());
+	deckIndex = 0;
+	revealed = false;
+	correctCount = 0;
+	wrongItems = [];
+	roundDone = false;
+	render();
+}
+
+function reveal() {
+	if (roundDone || revealed) { return; }
+	revealed = true;
+	render();
+}
+
+function grade(correct) {
+	if (!revealed || roundDone) { return; }
+	if (correct) {
+		correctCount++;
+	} else {
+		wrongItems.push(deck[deckIndex]);
+	}
+	deckIndex++;
+	revealed = false;
+	if (deckIndex >= deck.length) {
+		roundDone = true;
+	}
+	render();
+}
+
+// ---- Rendering ----
+function render() {
+	updateProgress();
+	if (roundDone) {
+		renderSummary();
+	} else {
+		renderCard();
+	}
+}
+
+function updateProgress() {
+	const total = deck.length;
+	const done = deckIndex;
+	const pct = total > 0 ? (done / total) * 100 : 0;
+	const wrong = deckIndex - correctCount;
+	document.getElementById('progress-text').textContent = (done + 1 <= total ? done + 1 : done) + ' / ' + total;
+	document.getElementById('score-text').textContent = '✓ ' + correctCount + '  ✗ ' + wrong;
+	document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+function renderCard() {
+	const item = deck[deckIndex];
+	const cardArea = document.getElementById('card-area');
+	const gradeBar = document.getElementById('grade-bar');
+	const bottomBar = document.getElementById('bottom-bar');
+
+	gradeBar.style.display = revealed ? 'flex' : 'none';
+	bottomBar.style.display = 'none';
+
+	let html = '';
+
+	if (currentMode === 'hiragana' || currentMode === 'katakana') {
+		html += '<div class="flashcard' + (revealed ? ' revealed' : '') + '" onclick="reveal()">';
+		html += '<div class="card-label">' + (currentMode === 'hiragana' ? 'Hiragana' : 'Katakana') + '</div>';
+		html += '<div class="card-prompt-kana">' + item.char + '</div>';
+		if (revealed) {
+			html += '<div class="card-divider"></div>';
+			html += '<div class="card-answer-main">' + item.romaji + '</div>';
+		} else {
+			html += '<div class="tap-hint">tap to reveal</div>';
+		}
+		html += '</div>';
+
+	} else if (currentMode === 'en-jp') {
+		html += '<div class="flashcard' + (revealed ? ' revealed' : '') + '" onclick="reveal()">';
+		html += '<div class="card-label">English</div>';
+		html += '<div class="card-prompt-text">' + item.en + '</div>';
+		if (revealed) {
+			html += '<div class="card-divider"></div>';
+			html += '<div class="card-label">Japanese</div>';
+			html += '<div class="card-answer-kana">' + item.jp + '</div>';
+			if (item.jp !== item.reading) {
+				html += '<div class="card-answer-sub">' + item.reading + '</div>';
+			}
+			html += '<div class="card-answer-sub">' + item.romaji + '</div>';
+		} else {
+			html += '<div class="tap-hint">tap to reveal</div>';
+		}
+		html += '</div>';
+
+	} else if (currentMode === 'jp-en') {
+		html += '<div class="flashcard' + (revealed ? ' revealed' : '') + '" onclick="reveal()">';
+		html += '<div class="card-label">Japanese</div>';
+		html += '<div class="card-prompt-jp">' + item.jp + '</div>';
+		if (item.jp !== item.reading) {
+			html += '<div class="card-reading">' + item.reading + '</div>';
+		}
+		if (revealed) {
+			html += '<div class="card-divider"></div>';
+			html += '<div class="card-label">English</div>';
+			html += '<div class="card-answer-main">' + item.en + '</div>';
+			html += '<div class="card-answer-sub">' + item.romaji + '</div>';
+		} else {
+			html += '<div class="tap-hint">tap to reveal</div>';
+		}
+		html += '</div>';
+	}
+
+	cardArea.innerHTML = html;
+}
+
+function renderSummary() {
+	const cardArea = document.getElementById('card-area');
+	const gradeBar = document.getElementById('grade-bar');
+	const bottomBar = document.getElementById('bottom-bar');
+
+	gradeBar.style.display = 'none';
+
+	const total = deck.length;
+	const wrong = wrongItems.length;
+	const pct = Math.round((correctCount / total) * 100);
+
+	let html = '<div class="summary">';
+	html += '<div class="summary-score">' + correctCount + ' / ' + total + '</div>';
+	html += '<div class="summary-label">' + pct + '% correct</div>';
+
+	if (wrong === 0) {
+		html += '<div class="summary-detail">Perfect round! 🎉</div>';
+	} else {
+		html += '<div class="summary-detail">Missed ' + wrong + ' card' + (wrong === 1 ? '' : 's') + '</div>';
+	}
+
+	html += '</div>';
+	html += '<div class="action-bar">';
+	if (wrong > 0) {
+		html += '<button class="action-btn secondary-btn" onclick="startRound(wrongItems)">Redo Missed (' + wrong + ')</button>';
+	}
+	html += '<button class="action-btn primary-btn" onclick="startRound()">New Round</button>';
+	html += '</div>';
+
+	cardArea.innerHTML = html;
+	bottomBar.style.display = 'none';
+}
+
+// ---- Keyboard shortcut ----
+document.addEventListener('keydown', e => {
+	if (e.code === 'Space') {
+		e.preventDefault();
+		if (!revealed) {
+			reveal();
+		}
+	} else if (e.code === 'ArrowRight' || e.code === 'KeyG') {
+		if (revealed) { grade(true); }
+	} else if (e.code === 'ArrowLeft' || e.code === 'KeyX') {
+		if (revealed) { grade(false); }
+	}
+});
+
+// ---- Init ----
+setTheme(localStorage.getItem('jp-theme') || 'midnight');
+const savedMode = localStorage.getItem('jp-mode') || 'en-jp';
+currentMode = savedMode;
+document.querySelectorAll('.mode-btn').forEach((btn, i) => {
+	const modes = ['en-jp', 'jp-en', 'hiragana', 'katakana'];
+	btn.classList.toggle('active', modes[i] === savedMode);
+});
+startRound();
+</script>
+</body>
+</html>
