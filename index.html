@@ -231,7 +231,7 @@ h1 {
 	color: var(--text-on-accent);
 }
 
-/* Flashcard */
+/* Prompt card */
 .flashcard {
 	background: var(--panel);
 	border: 2px solid var(--panel2);
@@ -239,21 +239,15 @@ h1 {
 	padding: 36px 28px;
 	width: 100%;
 	max-width: 400px;
-	min-height: 220px;
+	min-height: 180px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
 	gap: 10px;
-	cursor: pointer;
-	transition: border-color 0.2s;
 	margin-bottom: 16px;
 	text-align: center;
 }
-
-.flashcard:hover { border-color: var(--accent); }
-.flashcard.revealed { cursor: default; }
-.flashcard.revealed:hover { border-color: var(--panel2); }
 
 .card-label {
 	font-size: 0.75rem;
@@ -287,68 +281,45 @@ h1 {
 	line-height: 1.4;
 }
 
-.card-divider {
-	width: 60%;
-	height: 1px;
-	background: var(--border-dim);
-	margin: 6px 0;
+/* Answer input area */
+.answer-area {
+	width: 100%;
+	max-width: 400px;
+	margin-bottom: 16px;
 }
 
-.card-answer-main {
-	font-size: 2rem;
-	font-weight: 700;
-	color: var(--win);
-}
-
-.card-answer-kana {
-	font-size: 3rem;
-	font-weight: 400;
-	color: var(--win);
-}
-
-.card-answer-sub {
-	font-size: 1rem;
-	color: var(--text-muted);
-}
-
-.tap-hint {
-	font-size: 0.8rem;
-	color: var(--text-dim);
-	margin-top: 8px;
-}
-
-/* Grade buttons */
-.grade-bar {
-	display: flex;
-	gap: 12px;
-	margin-bottom: 20px;
-}
-
-.grade-btn {
-	flex: 1;
-	padding: 14px 20px;
-	border: none;
+.answer-input {
+	width: 100%;
+	padding: 14px 16px;
+	border: 2px solid var(--panel2);
 	border-radius: 10px;
-	font-size: 1rem;
+	background: var(--panel);
+	color: var(--text);
+	font-size: 1.1rem;
+	font-family: inherit;
+	outline: none;
+	text-align: center;
+	transition: border-color 0.2s;
+	-webkit-user-select: auto;
+	user-select: auto;
+	display: block;
+	margin-bottom: 10px;
+}
+
+.answer-input:focus { border-color: var(--accent); }
+.answer-input.state-correct { border-color: var(--win); }
+.answer-input.state-wrong { border-color: var(--accent); }
+
+.feedback-msg {
+	text-align: center;
+	font-size: 1.05rem;
 	font-weight: 600;
-	cursor: pointer;
-	transition: all 0.15s;
-	max-width: 180px;
+	min-height: 1.5em;
+	margin-bottom: 10px;
 }
 
-.grade-btn.correct {
-	background: var(--win);
-	color: #000;
-}
-
-.grade-btn.correct:hover { opacity: 0.85; }
-
-.grade-btn.wrong {
-	background: var(--accent);
-	color: var(--text-on-accent);
-}
-
-.grade-btn.wrong:hover { background: var(--accent-hover); }
+.feedback-msg.correct { color: var(--win); }
+.feedback-msg.wrong { color: var(--accent); }
 
 /* Progress */
 .progress-row {
@@ -379,7 +350,7 @@ h1 {
 	transition: width 0.3s;
 }
 
-/* Summary screen */
+/* Summary */
 .summary {
 	background: var(--panel);
 	border-radius: 16px;
@@ -507,13 +478,14 @@ h1 {
 	<div class="modal">
 		<button class="modal-close" onclick="document.getElementById('info-modal').classList.remove('open')">&times;</button>
 		<h2>How to Practice</h2>
-		<p>Choose a mode, then work through flashcards at your own pace.</p>
+		<p>Choose a mode, then type your answers.</p>
 		<ul>
-			<li>Tap the card (or press Space) to reveal the answer.</li>
-			<li>Mark yourself <strong>Got it</strong> or <strong>Missed it</strong> honestly.</li>
-			<li>At the end of a round, redo just the ones you missed.</li>
+			<li><strong>EN → JP</strong>: see English, type the romaji.</li>
+			<li><strong>JP → EN</strong>: see Japanese, type the English.</li>
+			<li><strong>Hiragana / Katakana</strong>: see the character, type the romaji.</li>
 		</ul>
-		<p><strong>Modes:</strong> EN→JP and JP→EN use your vocabulary list. Hiragana and Katakana cycle through all 46 base characters.</p>
+		<p>Press <strong>Enter</strong> to check your answer, then <strong>Enter</strong> again (or tap Next) to continue.</p>
+		<p>At the end of a round, you can redo just the ones you missed.</p>
 		<p>To add your own words, edit the <code>vocabulary</code> array at the top of the &lt;script&gt; in index.html.</p>
 	</div>
 </div>
@@ -540,7 +512,7 @@ h1 {
 
 <div class="mode-bar">
 	<button class="mode-btn active" onclick="setMode('en-jp')">EN → JP</button>
-	<button class="mode-btn" onclick="setMode('jp-en')">JP → EN</button>
+	<button class="mode-btn" onclick="setMode('jp-en')">Romaji → EN</button>
 	<button class="mode-btn" onclick="setMode('hiragana')">Hiragana</button>
 	<button class="mode-btn" onclick="setMode('katakana')">Katakana</button>
 </div>
@@ -555,13 +527,14 @@ h1 {
 
 <div id="card-area"></div>
 
-<div class="grade-bar" id="grade-bar" style="display:none">
-	<button class="grade-btn correct" onclick="grade(true)">✓ Got it</button>
-	<button class="grade-btn wrong" onclick="grade(false)">✗ Missed it</button>
-</div>
-
-<div class="action-bar" id="bottom-bar" style="display:none">
-	<button class="action-btn secondary-btn" onclick="startRound()">New Round</button>
+<div class="answer-area" id="answer-area" style="display:none">
+	<input type="text" id="answer-input" class="answer-input"
+		autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+	<div class="feedback-msg" id="feedback-msg"></div>
+	<div class="action-bar">
+		<button class="action-btn primary-btn" id="check-btn" onclick="submitAnswer()">Check</button>
+		<button class="action-btn primary-btn" id="next-btn" onclick="nextCard()" style="display:none">Next →</button>
+	</div>
 </div>
 
 <script>
@@ -645,7 +618,7 @@ const katakana = [
 let currentMode = 'en-jp';
 let deck = [];
 let deckIndex = 0;
-let revealed = false;
+let answerState = 'asking'; // 'asking' | 'feedback'
 let correctCount = 0;
 let wrongItems = [];
 let roundDone = false;
@@ -697,28 +670,65 @@ function shuffle(arr) {
 function startRound(items) {
 	deck = shuffle(items || getDeckForMode());
 	deckIndex = 0;
-	revealed = false;
+	answerState = 'asking';
 	correctCount = 0;
 	wrongItems = [];
 	roundDone = false;
 	render();
 }
 
-function reveal() {
-	if (roundDone || revealed) { return; }
-	revealed = true;
-	render();
+function getCorrectAnswer() {
+	const item = deck[deckIndex];
+	if (currentMode === 'jp-en') {
+		return item.en.toLowerCase();
+	} else {
+		return item.romaji.toLowerCase();
+	}
 }
 
-function grade(correct) {
-	if (!revealed || roundDone) { return; }
+function submitAnswer() {
+	if (answerState !== 'asking') { return; }
+	const input = document.getElementById('answer-input');
+	const typed = input.value.trim().toLowerCase();
+	if (!typed) { return; }
+
+	const correct = typed === getCorrectAnswer();
+	answerState = 'feedback';
+
+	const item = deck[deckIndex];
+	const feedbackEl = document.getElementById('feedback-msg');
+
 	if (correct) {
 		correctCount++;
+		input.classList.add('state-correct');
+		feedbackEl.textContent = '✓ Correct!';
+		feedbackEl.className = 'feedback-msg correct';
 	} else {
-		wrongItems.push(deck[deckIndex]);
+		wrongItems.push(item);
+		input.classList.add('state-wrong');
+		let correctStr = '';
+		if (currentMode === 'jp-en') {
+			correctStr = item.en;
+		} else if (currentMode === 'en-jp') {
+			correctStr = item.romaji + '  (' + item.jp + ')';
+		} else {
+			correctStr = item.romaji;
+		}
+		feedbackEl.textContent = '✗  ' + correctStr;
+		feedbackEl.className = 'feedback-msg wrong';
 	}
+
+	input.disabled = true;
+	document.getElementById('check-btn').style.display = 'none';
+	document.getElementById('next-btn').style.display = '';
+	document.getElementById('next-btn').focus();
+
+	updateProgress();
+}
+
+function nextCard() {
 	deckIndex++;
-	revealed = false;
+	answerState = 'asking';
 	if (deckIndex >= deck.length) {
 		roundDone = true;
 	}
@@ -737,81 +747,49 @@ function render() {
 
 function updateProgress() {
 	const total = deck.length;
-	const done = deckIndex;
-	const pct = total > 0 ? (done / total) * 100 : 0;
-	const wrong = deckIndex - correctCount;
-	document.getElementById('progress-text').textContent = (done + 1 <= total ? done + 1 : done) + ' / ' + total;
-	document.getElementById('score-text').textContent = '✓ ' + correctCount + '  ✗ ' + wrong;
+	const cardNum = Math.min(deckIndex + 1, total);
+	const pct = total > 0 ? (deckIndex / total) * 100 : 0;
+	document.getElementById('progress-text').textContent = cardNum + ' / ' + total;
+	document.getElementById('score-text').textContent = '✓ ' + correctCount + '  ✗ ' + wrongItems.length;
 	document.getElementById('progress-fill').style.width = pct + '%';
 }
 
 function renderCard() {
 	const item = deck[deckIndex];
-	const cardArea = document.getElementById('card-area');
-	const gradeBar = document.getElementById('grade-bar');
-	const bottomBar = document.getElementById('bottom-bar');
 
-	gradeBar.style.display = revealed ? 'flex' : 'none';
-	bottomBar.style.display = 'none';
-
-	let html = '';
-
+	// Build prompt card
+	let html = '<div class="flashcard">';
 	if (currentMode === 'hiragana' || currentMode === 'katakana') {
-		html += '<div class="flashcard' + (revealed ? ' revealed' : '') + '" onclick="reveal()">';
-		html += '<div class="card-label">' + (currentMode === 'hiragana' ? 'Hiragana' : 'Katakana') + '</div>';
+		html += '<div class="card-label">' + (currentMode === 'hiragana' ? 'Hiragana' : 'Katakana') + ' → Romaji</div>';
 		html += '<div class="card-prompt-kana">' + item.char + '</div>';
-		if (revealed) {
-			html += '<div class="card-divider"></div>';
-			html += '<div class="card-answer-main">' + item.romaji + '</div>';
-		} else {
-			html += '<div class="tap-hint">tap to reveal</div>';
-		}
-		html += '</div>';
-
 	} else if (currentMode === 'en-jp') {
-		html += '<div class="flashcard' + (revealed ? ' revealed' : '') + '" onclick="reveal()">';
-		html += '<div class="card-label">English</div>';
+		html += '<div class="card-label">English → Romaji</div>';
 		html += '<div class="card-prompt-text">' + item.en + '</div>';
-		if (revealed) {
-			html += '<div class="card-divider"></div>';
-			html += '<div class="card-label">Japanese</div>';
-			html += '<div class="card-answer-kana">' + item.jp + '</div>';
-			if (item.jp !== item.reading) {
-				html += '<div class="card-answer-sub">' + item.reading + '</div>';
-			}
-			html += '<div class="card-answer-sub">' + item.romaji + '</div>';
-		} else {
-			html += '<div class="tap-hint">tap to reveal</div>';
-		}
-		html += '</div>';
-
 	} else if (currentMode === 'jp-en') {
-		html += '<div class="flashcard' + (revealed ? ' revealed' : '') + '" onclick="reveal()">';
-		html += '<div class="card-label">Japanese</div>';
-		html += '<div class="card-prompt-jp">' + item.jp + '</div>';
-		if (item.jp !== item.reading) {
-			html += '<div class="card-reading">' + item.reading + '</div>';
-		}
-		if (revealed) {
-			html += '<div class="card-divider"></div>';
-			html += '<div class="card-label">English</div>';
-			html += '<div class="card-answer-main">' + item.en + '</div>';
-			html += '<div class="card-answer-sub">' + item.romaji + '</div>';
-		} else {
-			html += '<div class="tap-hint">tap to reveal</div>';
-		}
-		html += '</div>';
+		html += '<div class="card-label">Romaji → English</div>';
+		html += '<div class="card-prompt-text">' + item.romaji + '</div>';
 	}
+	html += '</div>';
+	document.getElementById('card-area').innerHTML = html;
 
-	cardArea.innerHTML = html;
+	// Reset input area
+	const answerArea = document.getElementById('answer-area');
+	const input = document.getElementById('answer-input');
+	answerArea.style.display = 'block';
+	input.value = '';
+	input.disabled = false;
+	input.className = 'answer-input';
+	input.placeholder = currentMode === 'jp-en' ? 'type English...' : 'type romaji...';
+	document.getElementById('feedback-msg').textContent = '';
+	document.getElementById('feedback-msg').className = 'feedback-msg';
+	document.getElementById('check-btn').style.display = '';
+	document.getElementById('next-btn').style.display = 'none';
+
+	setTimeout(() => input.focus(), 50);
 }
 
 function renderSummary() {
-	const cardArea = document.getElementById('card-area');
-	const gradeBar = document.getElementById('grade-bar');
-	const bottomBar = document.getElementById('bottom-bar');
-
-	gradeBar.style.display = 'none';
+	document.getElementById('answer-area').style.display = 'none';
 
 	const total = deck.length;
 	const wrong = wrongItems.length;
@@ -820,13 +798,11 @@ function renderSummary() {
 	let html = '<div class="summary">';
 	html += '<div class="summary-score">' + correctCount + ' / ' + total + '</div>';
 	html += '<div class="summary-label">' + pct + '% correct</div>';
-
 	if (wrong === 0) {
 		html += '<div class="summary-detail">Perfect round! 🎉</div>';
 	} else {
 		html += '<div class="summary-detail">Missed ' + wrong + ' card' + (wrong === 1 ? '' : 's') + '</div>';
 	}
-
 	html += '</div>';
 	html += '<div class="action-bar">';
 	if (wrong > 0) {
@@ -835,21 +811,17 @@ function renderSummary() {
 	html += '<button class="action-btn primary-btn" onclick="startRound()">New Round</button>';
 	html += '</div>';
 
-	cardArea.innerHTML = html;
-	bottomBar.style.display = 'none';
+	document.getElementById('card-area').innerHTML = html;
 }
 
-// ---- Keyboard shortcut ----
+// ---- Keyboard ----
 document.addEventListener('keydown', e => {
-	if (e.code === 'Space') {
-		e.preventDefault();
-		if (!revealed) {
-			reveal();
+	if (e.code === 'Enter') {
+		if (answerState === 'asking') {
+			submitAnswer();
+		} else if (answerState === 'feedback' && !roundDone) {
+			nextCard();
 		}
-	} else if (e.code === 'ArrowRight' || e.code === 'KeyG') {
-		if (revealed) { grade(true); }
-	} else if (e.code === 'ArrowLeft' || e.code === 'KeyX') {
-		if (revealed) { grade(false); }
 	}
 });
 
