@@ -532,6 +532,7 @@ h1 {
 		autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
 	<div class="feedback-msg" id="feedback-msg"></div>
 	<div class="action-bar">
+		<button class="action-btn secondary-btn" id="skip-btn" onclick="doSubmit(false)">I don't remember</button>
 		<button class="action-btn primary-btn" id="check-btn" onclick="submitAnswer()">Check</button>
 		<button class="action-btn primary-btn" id="next-btn" onclick="nextCard()" style="display:none">Next →</button>
 	</div>
@@ -540,51 +541,279 @@ h1 {
 <script>
 // ============================================================
 // VOCABULARY LIST — add your words here!
-// Format: { en: "English", jp: "Japanese", reading: "ひらがな", romaji: "romaji" }
-// 'reading' is the hiragana reading shown for kanji words.
-// For pure kana words, jp and reading can be the same.
+// Format: { en: "English", romaji: "romaji" }
 // ============================================================
 const vocabulary = [
-	{ en: "water", jp: "水", reading: "みず", romaji: "mizu" },
-	{ en: "fire", jp: "火", reading: "ひ", romaji: "hi" },
-	{ en: "mountain", jp: "山", reading: "やま", romaji: "yama" },
-	{ en: "river", jp: "川", reading: "かわ", romaji: "kawa" },
-	{ en: "person", jp: "人", reading: "ひと", romaji: "hito" },
-	{ en: "day / sun", jp: "日", reading: "ひ", romaji: "hi" },
-	{ en: "moon / month", jp: "月", reading: "つき", romaji: "tsuki" },
-	{ en: "tree / wood", jp: "木", reading: "き", romaji: "ki" },
-	{ en: "book", jp: "本", reading: "ほん", romaji: "hon" },
-	{ en: "school", jp: "学校", reading: "がっこう", romaji: "gakkou" },
-	{ en: "eat", jp: "食べる", reading: "たべる", romaji: "taberu" },
-	{ en: "drink", jp: "飲む", reading: "のむ", romaji: "nomu" },
-	{ en: "go", jp: "行く", reading: "いく", romaji: "iku" },
-	{ en: "come", jp: "来る", reading: "くる", romaji: "kuru" },
-	{ en: "see / watch", jp: "見る", reading: "みる", romaji: "miru" },
-	{ en: "hear / listen", jp: "聞く", reading: "きく", romaji: "kiku" },
-	{ en: "speak", jp: "話す", reading: "はなす", romaji: "hanasu" },
-	{ en: "read", jp: "読む", reading: "よむ", romaji: "yomu" },
-	{ en: "write", jp: "書く", reading: "かく", romaji: "kaku" },
-	{ en: "buy", jp: "買う", reading: "かう", romaji: "kau" },
-	{ en: "big", jp: "大きい", reading: "おおきい", romaji: "ookii" },
-	{ en: "small", jp: "小さい", reading: "ちいさい", romaji: "chiisai" },
-	{ en: "new", jp: "新しい", reading: "あたらしい", romaji: "atarashii" },
-	{ en: "old (thing)", jp: "古い", reading: "ふるい", romaji: "furui" },
-	{ en: "good", jp: "いい", reading: "いい", romaji: "ii" },
-	{ en: "hot (weather)", jp: "暑い", reading: "あつい", romaji: "atsui" },
-	{ en: "cold (weather)", jp: "寒い", reading: "さむい", romaji: "samui" },
-	{ en: "cat", jp: "猫", reading: "ねこ", romaji: "neko" },
-	{ en: "dog", jp: "犬", reading: "いぬ", romaji: "inu" },
-	{ en: "car", jp: "車", reading: "くるま", romaji: "kuruma" },
-	{ en: "house / home", jp: "家", reading: "いえ", romaji: "ie" },
-	{ en: "food", jp: "食べ物", reading: "たべもの", romaji: "tabemono" },
-	{ en: "what", jp: "何", reading: "なに", romaji: "nani" },
-	{ en: "where", jp: "どこ", reading: "どこ", romaji: "doko" },
-	{ en: "who", jp: "誰", reading: "だれ", romaji: "dare" },
-	{ en: "yes", jp: "はい", reading: "はい", romaji: "hai" },
-	{ en: "no", jp: "いいえ", reading: "いいえ", romaji: "iie" },
-	{ en: "thank you", jp: "ありがとう", reading: "ありがとう", romaji: "arigatou" },
-	{ en: "sorry / excuse me", jp: "すみません", reading: "すみません", romaji: "sumimasen" },
-	{ en: "please (give me)", jp: "ください", reading: "ください", romaji: "kudasai" },
+	// A
+	{ en: "oh", romaji: "a" },
+	{ en: "iced coffee", romaji: "aisukoohii" },
+	{ en: "ice cream", romaji: "aisukuriimu" },
+	{ en: "red", romaji: "akai" },
+	{ en: "cheerful", romaji: "akarui" },
+	{ en: "America(n)", romaji: "amerika(jin)" },
+	{ en: "older sister", romaji: "ane" },
+	{ en: "older brother", romaji: "ani" },
+	{ en: "anime", romaji: "anime" },
+	{ en: "that over there", romaji: "ano" },
+	{ en: "blue", romaji: "aoi" },
+	{ en: "thank you", romaji: "arigatougozaimasu" },
+	{ en: "there is/are not", romaji: "arimasen" },
+	{ en: "do you have…", romaji: "arimasuka" },
+	{ en: "breakfast", romaji: "asagohan" },
+	{ en: "hang out", romaji: "asobimasu" },
+	{ en: "over there", romaji: "asoko" },
+	{ en: "smart", romaji: "atamagaii" },
+	{ en: "new", romaji: "atarashi" },
+	// B
+	{ en: "dinner", romaji: "bangohan" },
+	{ en: "basketball", romaji: "basukettobooru" },
+	{ en: "bus stop", romaji: "basutei" },
+	{ en: "lawyer", romaji: "bengoshi" },
+	{ en: "boxed lunch", romaji: "bentou" },
+	{ en: "hat", romaji: "boushi" },
+	{ en: "Brazil(ian)", romaji: "burajiru(jin)" },
+	// C
+	{ en: "dad", romaji: "chichi" },
+	{ en: "small", romaji: "chiisai" },
+	{ en: "underground level", romaji: "chika" },
+	{ en: "close", romaji: "chikai" },
+	{ en: "subway", romaji: "chikatetsu" },
+	{ en: "map", romaji: "chizu" },
+	// D
+	{ en: "university", romaji: "daigaku" },
+	{ en: "college student", romaji: "daigakusei" },
+	{ en: "unfashionable", romaji: "dasai" },
+	{ en: "exit", romaji: "deguchi" },
+	{ en: "go out", romaji: "dekakemasu" },
+	{ en: "phone", romaji: "denwa" },
+	{ en: "department store", romaji: "depaato" },
+	{ en: "it is", romaji: "desu" },
+	{ en: "drama", romaji: "dorama" },
+	{ en: "dress", romaji: "doreso" },
+	{ en: "where", romaji: "doko" },
+	{ en: "how's", romaji: "dou" },
+	{ en: "videos", romaji: "douga" },
+	{ en: "nice to meet you", romaji: "douzo yoroshiku" },
+	{ en: "Saturday", romaji: "doyoubi" },
+	// E
+	{ en: "ATM", romaji: "eetiiemu" },
+	{ en: "um", romaji: "eeto" },
+	{ en: "movies", romaji: "eiga" },
+	{ en: "train station", romaji: "eki" },
+	{ en: "yen", romaji: "en" },
+	{ en: "engineer", romaji: "enjinia" },
+	{ en: "elevator", romaji: "erebeetaa" },
+	// F
+	{ en: "clothes", romaji: "fuku" },
+	{ en: "old", romaji: "furui" },
+	{ en: "two", romaji: "futatsu" },
+	// G
+	{ en: "want", romaji: "gahoshiidesu" },
+	{ en: "student", romaji: "gakusei" },
+	{ en: "video games", romaji: "geemu" },
+	{ en: "five", romaji: "go" },
+	{ en: "rice", romaji: "gohan" },
+	{ en: "trash can", romaji: "gomibaku" },
+	{ en: "around", romaji: "goro" },
+	// H
+	{ en: "eight o'clock", romaji: "hachiji" },
+	{ en: "mom", romaji: "haha" },
+	{ en: "yes", romaji: "hai" },
+	{ en: "nice to meet you", romaji: "hajimemashite" },
+	{ en: "thirty", romaji: "han" },
+	{ en: "talk", romaji: "hanashimasu" },
+	{ en: "lunch", romaji: "hirugohan" },
+	{ en: "person", romaji: "hito" },
+	{ en: "by myself", romaji: "hitoride" },
+	{ en: "one", romaji: "hitotsu" },
+	{ en: "book", romaji: "hon" },
+	{ en: "platform", romaji: "hoomu" },
+	{ en: "hotel", romaji: "hoteru" },
+	{ en: "hundred", romaji: "hyaku" },
+	// I
+	{ en: "one", romaji: "ichi" },
+	{ en: "Britain (British)", romaji: "igirisu(jin)" },
+	{ en: "sounds nice", romaji: "ii" },
+	{ en: "no", romaji: "iie" },
+	{ en: "first floor", romaji: "ikkai" },
+	{ en: "how much", romaji: "ikura" },
+	{ en: "now", romaji: "ima" },
+	{ en: "younger sister", romaji: "imouto" },
+	{ en: "doctor", romaji: "isha" },
+	{ en: "busy", romaji: "isogashii" },
+	// J
+	{ en: "okay then", romaji: "jaa" },
+	{ en: "bye", romaji: "jaane" },
+	{ en: "jacket", romaji: "jaketto" },
+	{ en: "it is not", romaji: "janaidesu" },
+	{ en: "jazz", romaji: "jazu" },
+	{ en: "o'clock", romaji: "ji" },
+	{ en: "vending machines", romaji: "jihanki" },
+	{ en: "judo", romaji: "juudou" },
+	{ en: "eleven o'clock", romaji: "juuichiji" },
+	{ en: "ten o'clock", romaji: "juuji" },
+	{ en: "twelve", romaji: "juuni" },
+	{ en: "juice", romaji: "juusu" },
+	// K
+	{ en: "?", romaji: "ka" },
+	{ en: "bag", romaji: "kaban" },
+	{ en: "cafe", romaji: "kafe" },
+	{ en: "stairs", romaji: "kaidan" },
+	{ en: "buy", romaji: "kaimasu" },
+	{ en: "ticket gate", romaji: "kaisatsu" },
+	{ en: "office worker", romaji: "kaishain" },
+	{ en: "cool", romaji: "kakkoii" },
+	{ en: "Canada (Canadian)", romaji: "kanada(jin)" },
+	{ en: "nurse", romaji: "kangoshi" },
+	{ en: "karate", romaji: "karate" },
+	{ en: "curry", romaji: "karee" },
+	{ en: "umbrella", romaji: "kasa" },
+	{ en: "cute", romaji: "kawaii" },
+	{ en: "family", romaji: "kazoku" },
+	{ en: "cake", romaji: "keeki" },
+	{ en: "listen", romaji: "kikimasu" },
+	{ en: "ticket", romaji: "kippu" },
+	{ en: "clean", romaji: "kirei" },
+	{ en: "storage lockers", romaji: "koinrokkaa" },
+	{ en: "here", romaji: "koko" },
+	{ en: "good evening", romaji: "konbanwa" },
+	{ en: "convenience store", romaji: "konbini" },
+	{ en: "hello", romaji: "konnichiwa" },
+	{ en: "this (adj)", romaji: "kono" },
+	{ en: "outlet", romaji: "konsento" },
+	{ en: "coffee", romaji: "koohii" },
+	{ en: "coat", romaji: "kooto" },
+	{ en: "this (noun)", romaji: "kore" },
+	{ en: "these (noun)", romaji: "korera" },
+	{ en: "black tea", romaji: "koucha" },
+	{ en: "please", romaji: "kudasai" },
+	{ en: "nine o'clock", romaji: "kuji" },
+	{ en: "black", romaji: "kuroi" },
+	{ en: "shoe", romaji: "kutsu" },
+	{ en: "airport", romaji: "kuukou" },
+	{ en: "Kyoto", romaji: "kyoutu" },
+	// M
+	{ en: "town", romaji: "machi" },
+	{ en: "every night", romaji: "maiban" },
+	{ en: "every day", romaji: "mainichi" },
+	{ en: "every morning", romaji: "maiasa" },
+	{ en: "manga", romaji: "manga" },
+	{ en: "see you tomorrow", romaji: "mata ashita" },
+	{ en: "watch", romaji: "mimasu" },
+	{ en: "store", romaji: "mise" },
+	{ en: "miso soup", romaji: "misoshiru" },
+	{ en: "three", romaji: "mittsu" },
+	{ en: "water", romaji: "mizu" },
+	{ en: "also", romaji: "mo" },
+	{ en: "son", romaji: "musuko" },
+	{ en: "daughter", romaji: "musume" },
+	// N
+	{ en: "seven", romaji: "nana" },
+	{ en: "when", romaji: "nanji" },
+	{ en: "isn't it", romaji: "ne" },
+	{ en: "necktie", romaji: "nekutai" },
+	{ en: "in", romaji: "ni" },
+	{ en: "two", romaji: "ni" },
+	{ en: "Sunday", romaji: "nichiyoubi" },
+	{ en: "lively", romaji: "nigiyaka" },
+	{ en: "Japan(ese)", romaji: "nihon(jin)" },
+	{ en: "two o'clock", romaji: "niji" },
+	{ en: "second floor", romaji: "nikai" },
+	{ en: "(possessive)", romaji: "no" },
+	{ en: "drink", romaji: "nomimasu" },
+	{ en: "transfer", romaji: "norikae" },
+	{ en: "New York", romaji: "nyuu yooku" },
+	{ en: "news", romaji: "nyuusu" },
+	// O
+	{ en: "good morning", romaji: "ohayougozaimasu" },
+	{ en: "delicious", romaji: "oishii" },
+	{ en: "funny", romaji: "omoshiroi" },
+	{ en: "what's your name?", romaji: "onamae wa" },
+	{ en: "music", romaji: "ongaku" },
+	{ en: "rice ball", romaji: "onigiri" },
+	{ en: "big", romaji: "ookii" },
+	{ en: "Osaka", romaji: "oosaka" },
+	{ en: "fashionable", romaji: "oshare" },
+	{ en: "restroom", romaji: "otearai" },
+	{ en: "younger brother", romaji: "otouto" },
+	{ en: "husband", romaji: "otto" },
+	{ en: "swim", romaji: "oyogimasu" },
+	// P
+	{ en: "bread", romaji: "pan" },
+	{ en: "passport", romaji: "pasupooto" },
+	{ en: "pizza", romaji: "piza" },
+	// R
+	{ en: "ramen", romaji: "raamen" },
+	{ en: "restaurant", romaji: "resutoran" },
+	{ en: "rock", romaji: "rokku" },
+	{ en: "six", romaji: "roku" },
+	// S
+	{ en: "years old", romaji: "sai" },
+	{ en: "wallet", romaji: "saifu" },
+	{ en: "soccer", romaji: "sakkaa" },
+	{ en: "Mr./Mrs.", romaji: "san" },
+	{ en: "three", romaji: "san" },
+	{ en: "sandwich", romaji: "sandoicchi" },
+	{ en: "salad", romaji: "sarada" },
+	{ en: "thousand", romaji: "sen" },
+	{ en: "teacher", romaji: "sensei" },
+	{ en: "seven o'clock", romaji: "shichiji" },
+	{ en: "play", romaji: "shimasu" },
+	{ en: "white", romaji: "shiroi" },
+	{ en: "quiet", romaji: "shizuka" },
+	{ en: "from", romaji: "shusshin" },
+	{ en: "on the weekends", romaji: "shuumatsuwa" },
+	{ en: "there", romaji: "soko" },
+	{ en: "that (adj)", romaji: "sono" },
+	{ en: "that (noun)", romaji: "sore" },
+	{ en: "those (noun)", romaji: "sorera" },
+	{ en: "skirt", romaji: "sukaato" },
+	{ en: "a bit", romaji: "sukoshi" },
+	{ en: "smartphone", romaji: "sumaho" },
+	{ en: "pardon me", romaji: "sumimasen" },
+	{ en: "lives (verb)", romaji: "sundeimasu" },
+	{ en: "where do you live?", romaji: "sundeimasuka" },
+	{ en: "sports", romaji: "supootsu" },
+	{ en: "sushi", romaji: "sushi" },
+	{ en: "lovely", romaji: "suteki" },
+	// T
+	{ en: "eats", romaji: "tabemasu" },
+	{ en: "expensive", romaji: "takai" },
+	{ en: "taxi", romaji: "takushii" },
+	{ en: "meal set", romaji: "teishoku" },
+	{ en: "tennis", romaji: "tenisu" },
+	{ en: "tempura", romaji: "tenpura" },
+	{ en: "TV", romaji: "terebi" },
+	{ en: "t-shirt", romaji: "tiishatsu" },
+	{ en: "and", romaji: "to" },
+	{ en: "sometimes", romaji: "tokidoki" },
+	{ en: "friends", romaji: "tomodachi" },
+	{ en: "far", romaji: "tooi" },
+	{ en: "city", romaji: "toshi" },
+	{ en: "very", romaji: "totemo" },
+	{ en: "Tokyo", romaji: "toukyou" },
+	{ en: "wife", romaji: "tsuma" },
+	// U
+	{ en: "noisy", romaji: "urusai" },
+	// W
+	{ en: "(subject)", romaji: "wa" },
+	{ en: "I don't really like", romaji: "wachotto" },
+	{ en: "wifi", romaji: "waifai" },
+	{ en: "I", romaji: "watashi" },
+	{ en: "my", romaji: "watashino" },
+	// Y
+	{ en: "yoga", romaji: "yoga" },
+	{ en: "baseball", romaji: "yakyuu" },
+	{ en: "nice", romaji: "yasashii" },
+	{ en: "cheap", romaji: "yasui" },
+	{ en: "often", romaji: "yoku" },
+	{ en: "read", romaji: "yomimasu" },
+	{ en: "four", romaji: "yon" },
+	{ en: "four", romaji: "yottsu" },
+	{ en: "welcome", romaji: "yuokoso" },
+	{ en: "famous", romaji: "yuumei" },
+	// Z
+	{ en: "magazine", romaji: "zasshi" },
 ];
 
 // ---- Kana data ----
@@ -649,7 +878,7 @@ function setMode(mode) {
 
 function getDeckForMode() {
 	if (currentMode === 'en-jp' || currentMode === 'jp-en') {
-		return [...vocabulary];
+		return shuffle([...vocabulary]).slice(0, 20);
 	} else if (currentMode === 'hiragana') {
 		return [...hiragana];
 	} else {
@@ -686,19 +915,15 @@ function getCorrectAnswer() {
 	}
 }
 
-function submitAnswer() {
+function doSubmit(isCorrect) {
 	if (answerState !== 'asking') { return; }
-	const input = document.getElementById('answer-input');
-	const typed = input.value.trim().toLowerCase();
-	if (!typed) { return; }
-
-	const correct = typed === getCorrectAnswer();
 	answerState = 'feedback';
 
 	const item = deck[deckIndex];
+	const input = document.getElementById('answer-input');
 	const feedbackEl = document.getElementById('feedback-msg');
 
-	if (correct) {
+	if (isCorrect) {
 		correctCount++;
 		input.classList.add('state-correct');
 		feedbackEl.textContent = '✓ Correct!';
@@ -706,24 +931,25 @@ function submitAnswer() {
 	} else {
 		wrongItems.push(item);
 		input.classList.add('state-wrong');
-		let correctStr = '';
-		if (currentMode === 'jp-en') {
-			correctStr = item.en;
-		} else if (currentMode === 'en-jp') {
-			correctStr = item.romaji + '  (' + item.jp + ')';
-		} else {
-			correctStr = item.romaji;
-		}
+		const correctStr = currentMode === 'jp-en' ? item.en : item.romaji;
 		feedbackEl.textContent = '✗  ' + correctStr;
 		feedbackEl.className = 'feedback-msg wrong';
 	}
 
 	input.disabled = true;
+	document.getElementById('skip-btn').style.display = 'none';
 	document.getElementById('check-btn').style.display = 'none';
 	document.getElementById('next-btn').style.display = '';
 	document.getElementById('next-btn').focus();
 
 	updateProgress();
+}
+
+function submitAnswer() {
+	if (answerState !== 'asking') { return; }
+	const typed = document.getElementById('answer-input').value.trim().toLowerCase();
+	if (!typed) { return; }
+	doSubmit(typed === getCorrectAnswer());
 }
 
 function nextCard() {
@@ -782,8 +1008,21 @@ function renderCard() {
 	input.placeholder = currentMode === 'jp-en' ? 'type English...' : 'type romaji...';
 	document.getElementById('feedback-msg').textContent = '';
 	document.getElementById('feedback-msg').className = 'feedback-msg';
+	document.getElementById('skip-btn').style.display = '';
 	document.getElementById('check-btn').style.display = '';
 	document.getElementById('next-btn').style.display = 'none';
+
+	input.oninput = function() {
+		if (answerState !== 'asking') { return; }
+		const typed = this.value.toLowerCase();
+		if (!typed) { return; }
+		const correct = getCorrectAnswer();
+		if (!correct.startsWith(typed)) {
+			doSubmit(false);
+		} else if (typed === correct) {
+			doSubmit(true);
+		}
+	};
 
 	setTimeout(() => input.focus(), 50);
 }
