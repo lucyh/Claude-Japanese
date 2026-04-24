@@ -212,8 +212,45 @@ h1 {
 	gap: 8px;
 	flex-wrap: wrap;
 	justify-content: center;
-	margin-bottom: 20px;
+	margin-bottom: 12px;
 }
+
+/* Filter bar */
+.filter-bar {
+	display: flex;
+	gap: 12px;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	margin-bottom: 20px;
+	width: 100%;
+	max-width: 400px;
+}
+
+.filter-bar.hidden { display: none; }
+
+.filter-group {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 0.85rem;
+	color: var(--text-muted);
+}
+
+.filter-select {
+	padding: 6px 10px;
+	border: 2px solid var(--panel2);
+	background: var(--panel);
+	color: var(--text);
+	border-radius: 6px;
+	font-size: 0.9rem;
+	font-family: inherit;
+	cursor: pointer;
+	outline: none;
+	transition: border-color 0.2s;
+}
+
+.filter-select:focus, .filter-select:hover { border-color: var(--accent); }
 
 .mode-btn {
 	padding: 8px 16px;
@@ -517,6 +554,17 @@ h1 {
 	<button class="mode-btn" onclick="setMode('katakana')">Katakana</button>
 </div>
 
+<div class="filter-bar" id="filter-bar">
+	<div class="filter-group">
+		<label for="section-filter">Section:</label>
+		<select class="filter-select" id="section-filter" onchange="onSectionChange()"></select>
+	</div>
+	<div class="filter-group">
+		<label for="unit-filter">Unit:</label>
+		<select class="filter-select" id="unit-filter" onchange="onUnitChange()"></select>
+	</div>
+</div>
+
 <div class="progress-row">
 	<span id="progress-text">1 / 1</span>
 	<span id="score-text">✓ 0 &nbsp; ✗ 0</span>
@@ -648,7 +696,6 @@ const vocabulary = [
 	{ en: "New York", romaji: "nyuu yooku", section: 2, unit: 2 },
 	{ en: "Tokyo", romaji: "toukyou", section: 2, unit: 2 },
 	{ en: "also", romaji: "mo", section: 2, unit: 2 },
-	{ en: "Osaka", romaji: "oosaka" },
 	{ en: "in", romaji: "ni", section: 2, unit: 2 },
 	{ en: "where do you live?", romaji: "sundeimasuka", section: 2, unit: 2 },
 	{ en: "Kyoto", romaji: "kyoutu", section: 2, unit: 2 },
@@ -895,6 +942,8 @@ let answerState = 'asking'; // 'asking' | 'feedback'
 let correctCount = 0;
 let wrongItems = [];
 let roundDone = false;
+let selectedSection = 'all';
+let selectedUnit = 'all';
 
 // ---- Theme ----
 function setTheme(theme) {
@@ -917,12 +966,86 @@ function setMode(mode) {
 		btn.classList.toggle('active', modes[i] === mode);
 	});
 	localStorage.setItem('jp-mode', mode);
+	updateFilterVisibility();
 	startRound();
+}
+
+function isVocabMode() {
+	return currentMode === 'en-jp' || currentMode === 'jp-en';
+}
+
+function updateFilterVisibility() {
+	document.getElementById('filter-bar').classList.toggle('hidden', !isVocabMode());
+}
+
+// ---- Filter helpers ----
+function getSections() {
+	const set = new Set();
+	vocabulary.forEach(v => { if (v.section != null) { set.add(v.section); } });
+	return [...set].sort((a, b) => a - b);
+}
+
+function getUnitsForSection(section) {
+	const set = new Set();
+	vocabulary.forEach(v => {
+		if (v.unit == null) { return; }
+		if (section === 'all' || v.section === section) { set.add(v.unit); }
+	});
+	return [...set].sort((a, b) => a - b);
+}
+
+function populateSectionFilter() {
+	const sel = document.getElementById('section-filter');
+	const sections = getSections();
+	let html = '<option value="all">All</option>';
+	sections.forEach(s => {
+		html += '<option value="' + s + '">Section ' + s + '</option>';
+	});
+	sel.innerHTML = html;
+	sel.value = selectedSection;
+}
+
+function populateUnitFilter() {
+	const sel = document.getElementById('unit-filter');
+	const section = selectedSection === 'all' ? 'all' : Number(selectedSection);
+	const units = getUnitsForSection(section);
+	let html = '<option value="all">All</option>';
+	units.forEach(u => {
+		html += '<option value="' + u + '">Unit ' + u + '</option>';
+	});
+	sel.innerHTML = html;
+	// preserve selection if still valid
+	const availableVals = ['all', ...units.map(String)];
+	if (!availableVals.includes(selectedUnit)) { selectedUnit = 'all'; }
+	sel.value = selectedUnit;
+}
+
+function onSectionChange() {
+	selectedSection = document.getElementById('section-filter').value;
+	localStorage.setItem('jp-section', selectedSection);
+	populateUnitFilter();
+	localStorage.setItem('jp-unit', selectedUnit);
+	if (isVocabMode()) { startRound(); }
+}
+
+function onUnitChange() {
+	selectedUnit = document.getElementById('unit-filter').value;
+	localStorage.setItem('jp-unit', selectedUnit);
+	if (isVocabMode()) { startRound(); }
+}
+
+function getFilteredVocab() {
+	return vocabulary.filter(v => {
+		if (selectedSection !== 'all' && v.section !== Number(selectedSection)) { return false; }
+		if (selectedUnit !== 'all' && v.unit !== Number(selectedUnit)) { return false; }
+		return true;
+	});
 }
 
 function getDeckForMode() {
 	if (currentMode === 'en-jp' || currentMode === 'jp-en') {
-		return shuffle([...vocabulary]).slice(0, 20);
+		const filtered = getFilteredVocab();
+		return shuffle(filtered).slice(0, 20);
 	} else if (currentMode === 'hiragana') {
 		return [...hiragana];
 	} else {
@@ -946,7 +1069,7 @@ function startRound(items) {
 	answerState = 'asking';
 	correctCount = 0;
 	wrongItems = [];
-	roundDone = false;
+	roundDone = deck.length === 0;
 	render();
 }
 
@@ -1075,6 +1198,15 @@ function renderSummary() {
 	document.getElementById('answer-area').style.display = 'none';
 
 	const total = deck.length;
+
+	if (total === 0) {
+		let html = '<div class="summary">';
+		html += '<div class="summary-label">No words match the selected section and unit.</div>';
+		html += '</div>';
+		document.getElementById('card-area').innerHTML = html;
+		return;
+	}
+
 	const wrong = wrongItems.length;
 	const pct = Math.round((correctCount / total) * 100);
 
@@ -1116,6 +1248,11 @@ document.querySelectorAll('.mode-btn').forEach((btn, i) => {
 	const modes = ['en-jp', 'jp-en', 'hiragana', 'katakana'];
 	btn.classList.toggle('active', modes[i] === savedMode);
 });
+selectedSection = localStorage.getItem('jp-section') || 'all';
+selectedUnit = localStorage.getItem('jp-unit') || 'all';
+populateSectionFilter();
+populateUnitFilter();
+updateFilterVisibility();
 startRound();
 </script>
 </body>
