@@ -1184,9 +1184,7 @@ function renderCard() {
 		const typed = this.value.toLowerCase();
 		if (!typed) { return; }
 		const correct = getCorrectAnswer();
-		if (!correct.startsWith(typed)) {
-			doSubmit(false);
-		} else if (typed === correct) {
+		if (typed === correct) {
 			doSubmit(true);
 		}
 	};
